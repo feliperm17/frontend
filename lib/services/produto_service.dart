@@ -41,6 +41,7 @@ class ProdutoService {
   }
 
   Future<void> updateProduto(Produto produto) async {
+    print(produto.toJson());
   final response = await http.put(
     Uri.parse('$baseUrl/${produto.id}'),
     headers: {"Content-Type": "application/json"},

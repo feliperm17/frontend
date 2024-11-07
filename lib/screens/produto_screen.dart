@@ -53,6 +53,20 @@ class ProdutosScreenState extends State<ProdutoScreen> {
     );
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
   void _showEditModal(Produto produto) {
     TextEditingController descricaoController =
         TextEditingController(text: produto.descricao);
@@ -60,6 +74,7 @@ class ProdutosScreenState extends State<ProdutoScreen> {
         TextEditingController(text: produto.preco.toString());
     TextEditingController estoqueController =
         TextEditingController(text: produto.estoque.toString());
+    DateTime date = produto.data;
 
     showModalBottomSheet(
       context: context,
@@ -92,14 +107,38 @@ class ProdutosScreenState extends State<ProdutoScreen> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text('Data: ${dateFormat.format(date)}'),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: date,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (picked != null && picked != date) {
+                        setState(() {
+                          date = picked;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
               ElevatedButton(
                 onPressed: () async {
+                  final double preco = double.tryParse(precoController.text) ?? 0.0;
+                  final int estoque = int.tryParse(estoqueController.text) ?? 0;
+                  
                   final updatedProduto = Produto(
                     id: produto.id,
                     descricao: descricaoController.text,
-                    preco: double.parse(precoController.text),
-                    estoque: int.parse(estoqueController.text),
-                    data: produto.data,  // Mantém a data original
+                    preco: preco,
+                    estoque: estoque,
+                    data: date,
                   );
 
                   await produtoService.updateProduto(updatedProduto);
@@ -121,6 +160,7 @@ class ProdutosScreenState extends State<ProdutoScreen> {
     TextEditingController descricaoController = TextEditingController();
     TextEditingController precoController = TextEditingController();
     TextEditingController estoqueController = TextEditingController();
+    DateTime date = selectedDate;
 
     showModalBottomSheet(
       context: context,
@@ -153,14 +193,38 @@ class ProdutosScreenState extends State<ProdutoScreen> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text('Data: ${dateFormat.format(date)}'),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: date,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (picked != null && picked != date) {
+                        setState(() {
+                          date = picked;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
               ElevatedButton(
                 onPressed: () async {
+                  final double preco = double.tryParse(precoController.text) ?? 0.0;
+                  final int estoque = int.tryParse(estoqueController.text) ?? 0;
+
                   final newProduto = Produto(
                     id: 0,  // ID será gerado pelo banco
                     descricao: descricaoController.text,
-                    preco: double.parse(precoController.text),
-                    estoque: int.parse(estoqueController.text),
-                    data: selectedDate,  // Data selecionada
+                    preco: preco,
+                    estoque: estoque,
+                    data: date,
                   );
                   await produtoService.addProduto(newProduto);
                   Navigator.of(context).pop();
