@@ -68,178 +68,235 @@ class ProdutosScreenState extends State<ProdutoScreen> {
   }
 
   void _showEditModal(Produto produto) {
-    TextEditingController descricaoController =
-        TextEditingController(text: produto.descricao);
-    TextEditingController precoController =
-        TextEditingController(text: produto.preco.toString());
-    TextEditingController estoqueController =
-        TextEditingController(text: produto.estoque.toString());
-    DateTime date = produto.data;
+  TextEditingController descricaoController =
+      TextEditingController(text: produto.descricao);
+  TextEditingController precoController =
+      TextEditingController(text: produto.preco.toString());
+  TextEditingController estoqueController =
+      TextEditingController(text: produto.estoque.toString());
+  DateTime date = produto.data;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16.0,
-            right: 16.0,
-            top: 16.0,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Editar Produto', style: TextStyle(fontSize: 18)),
-              TextField(
-                controller: descricaoController,
-                decoration: const InputDecoration(labelText: 'Descrição'),
-              ),
-              TextField(
-                controller: precoController,
-                decoration: const InputDecoration(labelText: 'Preço'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: estoqueController,
-                decoration: const InputDecoration(labelText: 'Estoque'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 8),
-              Row(
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        title: const Text(
+          'Editar Produto',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Data: ${dateFormat.format(date)}'),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: date,
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                      );
-                      if (picked != null && picked != date) {
-                        setState(() {
-                          date = picked;
-                        });
-                      }
-                    },
+                  TextField(
+                    controller: descricaoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Descrição',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: precoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Preço',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: estoqueController,
+                    decoration: const InputDecoration(
+                      labelText: 'Estoque',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text('Data: ${dateFormat.format(date)}'),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: date,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null && picked != date) {
+                            setState(() {
+                              date = picked;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  final double preco = double.tryParse(precoController.text) ?? 0.0;
-                  final int estoque = int.tryParse(estoqueController.text) ?? 0;
-                  
-                  final updatedProduto = Produto(
-                    id: produto.id,
-                    descricao: descricaoController.text,
-                    preco: preco,
-                    estoque: estoque,
-                    data: date,
-                  );
-
-                  await produtoService.updateProduto(updatedProduto);
-                  Navigator.of(context).pop();
-                  setState(() {
-                    futureProdutos = produtoService.getProdutos();
-                  });
-                },
-                child: const Text('Salvar Alterações'),
-              ),
-            ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancelar'),
           ),
-        );
-      },
-    );
-  }
+          ElevatedButton(
+            onPressed: () async {
+              final double preco = double.tryParse(precoController.text) ?? 0.0;
+              final int estoque = int.tryParse(estoqueController.text) ?? 0;
+
+              final updatedProduto = Produto(
+                id: produto.id,
+                descricao: descricaoController.text,
+                preco: preco,
+                estoque: estoque,
+                data: date,
+              );
+
+              await produtoService.updateProduto(updatedProduto);
+              Navigator.of(context).pop();
+              setState(() {
+                futureProdutos = produtoService.getProdutos();
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            child: const Text('Salvar Alterações'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   void _showAddProductModal() {
-    TextEditingController descricaoController = TextEditingController();
-    TextEditingController precoController = TextEditingController();
-    TextEditingController estoqueController = TextEditingController();
-    DateTime date = selectedDate;
+  TextEditingController descricaoController = TextEditingController();
+  TextEditingController precoController = TextEditingController();
+  TextEditingController estoqueController = TextEditingController();
+  DateTime date = selectedDate;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16.0,
-            right: 16.0,
-            top: 16.0,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Adicionar Produto', style: TextStyle(fontSize: 18)),
-              TextField(
-                controller: descricaoController,
-                decoration: const InputDecoration(labelText: 'Nome'),
-              ),
-              TextField(
-                controller: precoController,
-                decoration: const InputDecoration(labelText: 'Preço'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: estoqueController,
-                decoration: const InputDecoration(labelText: 'Estoque'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 8),
-              Row(
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        title: const Text(
+          'Adicionar Produto',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        content: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Data: ${dateFormat.format(date)}'),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () async {
-                      final DateTime? picked = await showDatePicker(
-                        context: context,
-                        initialDate: date,
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                      );
-                      if (picked != null && picked != date) {
-                        setState(() {
-                          date = picked;
-                        });
-                      }
-                    },
+                  TextField(
+                    controller: descricaoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Descrição',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: precoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Preço',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: estoqueController,
+                    decoration: const InputDecoration(
+                      labelText: 'Estoque',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Text('Data: ${dateFormat.format(date)}'),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: date,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null && picked != date) {
+                            setState(() {
+                              date = picked;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  final double preco = double.tryParse(precoController.text) ?? 0.0;
-                  final int estoque = int.tryParse(estoqueController.text) ?? 0;
-
-                  final newProduto = Produto(
-                    id: 0,  // ID será gerado pelo banco
-                    descricao: descricaoController.text,
-                    preco: preco,
-                    estoque: estoque,
-                    data: date,
-                  );
-                  await produtoService.addProduto(newProduto);
-                  Navigator.of(context).pop();
-                  setState(() {
-                    futureProdutos = produtoService.getProdutos();
-                  });
-                },
-                child: const Text('Adicionar Produto'),
-              ),
-            ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancelar'),
           ),
-        );
-      },
-    );
-  }
+          ElevatedButton(
+            onPressed: () async {
+              final double preco = double.tryParse(precoController.text) ?? 0.0;
+              final int estoque = int.tryParse(estoqueController.text) ?? 0;
+              final newProduto = Produto(
+                id: 0,  // O ID será gerado pelo banco de dados
+                descricao: descricaoController.text,
+                preco: preco,
+                estoque: estoque,
+                data: date,
+              );
+              await produtoService.addProduto(newProduto);
+              Navigator.of(context).pop();
+              setState(() {
+                futureProdutos = produtoService.getProdutos();
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            child: const Text('Adicionar Produto'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {

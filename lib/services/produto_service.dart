@@ -4,7 +4,7 @@ import 'package:frontend/models/produto.dart';
     //'produto.dart';
 
 class ProdutoService {
-  final String baseUrl = 'http://localhost:3000/api/v1/produtos'; // ajuste o endereço se necessário
+  final String baseUrl = 'http://localhost:3000/api/v1/produtos';
 
   Future<List<Produto>> getProdutos() async {
     final response = await http.get(Uri.parse('$baseUrl/'));
@@ -48,15 +48,10 @@ class ProdutoService {
     body: json.encode(produto.toJson()),
   );
   
-  // Adiciona logs para verificar a resposta
-  print('Status Code: ${response.statusCode}');
-  print('Response Body: ${response.body}');
-  
   if (response.statusCode != 200) {
     throw Exception('Falha ao atualizar produto');
   }
 }
-
 
   Future<void> deleteProduto(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl/$id'));
