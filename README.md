@@ -65,4 +65,3 @@ Este projeto utiliza a Licença MIT.
 ## Autor
 
 Desenvolvido por Felipe Roskosz Moran.
-```
