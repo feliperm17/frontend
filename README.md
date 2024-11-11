@@ -4,7 +4,7 @@ Este é um aplicativo desenvolvido em Flutter para gerenciamento de produtos. O 
 
 ## Funcionalidades
 
-- **Listar produtos**: Exibe uma lista de produtos com informações como nome, preço e descrição.
+- **Listar produtos**: Exibe uma lista de produtos com informações como nome, preço, descrição e data.
 - **Adicionar produto**: Permite inserir um novo produto.
 - **Editar produto**: Permite atualizar os detalhes de um produto existente.
 - **Excluir produto**: Remove um produto da lista.
@@ -54,13 +54,9 @@ Para Rodar o Front rode os seguintes comandos:
 ```bash
 flutter run
 ```
-Após rodar, selecione o Edge:
+Após rodar, selecione o navegador.
 
-```bash
-2
-```
-
-O aplicativo estará disponível em um emulador ou dispositivo físico conectado.
+O aplicativo estará disponível no navegador de escolha.
 
 ## Licença
 
@@ -68,5 +64,5 @@ Este projeto utiliza a Licença MIT.
 
 ## Autor
 
-Desenvolvido por [Felipe Roskosz Moran].
+Desenvolvido por Felipe Roskosz Moran.
 ```
